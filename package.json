@@ -1,0 +1,13 @@
+{
+  "name": "chatrooms",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "mime": "^2.4.0",
+    "socket.io": "^2.2.0"
+  },
+  "scripts": {
+    "start":"node ./server/index.js"
+  }
+}
