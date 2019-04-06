@@ -27,35 +27,26 @@ let currentRoom = {};
 
 
 exports.listen = function (server) {
-  io = socketio(server)
-  io.on('connection', socket => {
-    assignGuestName(socket)
-    joinRoom(socket, 'Lobby')
-    handleMessageBroadcasting(socket)
-    // showLog()
-  })
+    io = socketio(server)
+    io.on('connection', socket => {
+        assignGuestName(socket)
+        joinRoom(socket, 'Lobby')
+        handleMessageBroadcasting(socket)
+    })
 }
-
-function showLog() {
-  console.log(guestNumber)
-  console.log(nickNames)
-  console.log(nameUsed)
-}
-
 
 // 分配名称
 // socket.id会为每一个连接分配一个id，为每个连接分配一个用户名
 // 播报命名结果与推入已使用用户名
 
 function assignGuestName(socket) {
-  let name = 'Guest' + guestNumber;
-  nickNames[socket.id] = name;
-  socket.emit('nameResult', {
-    success: true,
-    name: name
-  })
-  nameUsed.push(name);
-  guestNumber = guestNumber + 1
+    let name = 'Guest' + guestNumber;
+    nickNames[socket.id] = name;
+    socket.emit('init', {
+        name: name
+    })
+    nameUsed.push(name);
+    guestNumber = guestNumber + 1
 }
 
 // 加入房间
@@ -64,29 +55,33 @@ function assignGuestName(socket) {
 
 function joinRoom(socket, room) {
 
-  // 加入房间
-  socket.join(room);
-  currentRoom[socket.id] = room;
-  socket.emit('joinResult', { room: room });
+    // 加入房间
+    socket.join(room);
+    currentRoom[socket.id] = room;
+    //   socket.emit('joinResult', { room: room });
 
-  // 发出用户进入的广播
-  socket.broadcast.to(room).emit('message', {
-    text: nickNames[socket.id] + '你加入了房间' + room + '.'
-  })
+    // 发出用户进入的广播
+    socket.broadcast.to(room).emit('message', {
+        sender: 'system',
+        text: `${nickNames[socket.id]} 加入了房间 ${room} `,
+    })
 
-  // 获取客户端列表
-  io.clients((error, usersInRoom) => {
-    if (error) throw error;
-    // 获取房间中的人名
-    if (usersInRoom.length > 1) {
-      let usersInRoomSummary = '当前在房间' + room + '中有以下访客:';
-      usersInRoom.forEach(userSocketId => {
-        usersInRoomSummary += nickNames[userSocketId];
-        usersInRoomSummary += '.'
-      })
-      socket.emit('message', { text: usersInRoomSummary })
-    }
-  });
+    // 获取客户端列表
+    io.clients((error, usersInRoom) => {
+        if (error) throw error;
+        // 获取房间中的人名
+        if (usersInRoom.length > 1) {
+            let usersInRoomSummary = '当前在房间中有以下访客:';
+            usersInRoom.forEach(userSocketId => {
+                usersInRoomSummary += nickNames[userSocketId];
+                usersInRoomSummary += '、'
+            })
+            socket.emit('message', {
+                sender: 'system',
+                text: usersInRoomSummary
+            })
+        }
+    });
 
 }
 
@@ -94,9 +89,12 @@ function joinRoom(socket, room) {
 // 处理用户发送信息的功能
 
 function handleMessageBroadcasting(socket) {
-  socket.on('message', (req) => {
-    socket.broadcast.to(req.room).emit('message', {
-      text: nickNames[socket.id] + ':' + req.text
+    socket.on('message', (req, fn) => {
+        fn()
+        socket.broadcast.to(req.room).emit('message', {
+            sender: nickNames[socket.id],
+            text: req.text
+        })
+        console.log(req.text)
     })
-  })
 }

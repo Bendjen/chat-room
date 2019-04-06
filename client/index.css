@@ -3,12 +3,14 @@
   margin: 0;
 }
 
-html,body{
+html,body,#app{
   width: 100%;
   height: 100%;
   position: relative;
   background: #00bcd4;
   overflow: hidden;
+  font-size: 16px;
+  /* box-sizing: border-box; */
 }
 
 h1{
@@ -27,7 +29,11 @@ h1{
 .messageBox{
   height: 70%;
   width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden; 
   background: #fff;
+  box-sizing: border-box;
+  padding: 20px;
 }
 .inputBox{
   height: 30%;
@@ -35,3 +41,85 @@ h1{
   border-top: 1px solid #e5e5e5;
   background: #FFEEBC;
 }
+
+.inputBox textarea{
+    width: 90%;
+    height: 80%;
+    background: none;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    line-height: 2;
+    padding: 10px;
+}
+
+.inputBox .sendButton{
+    position: absolute;
+    bottom: 5px;
+    right: 0;
+    padding: 8px 15px;
+    margin-right:10px; 
+}
+
+.otherMessage .message {
+    position: relative;
+    padding: 10px;
+    background: #c9c9c9;
+    border-radius: 5px;
+    margin-left:15px;
+    display: inline-block;
+}
+.otherMessage .message::after {
+    position:absolute; 
+    top: 16px; 
+    left: -4px; 
+    padding: 5px;
+    border:inherit;  
+    border-left: none; 
+    border-top: none; 
+    content:""; 
+    background: inherit;
+    -webkit-transform: rotate(135deg); -moz-transform: rotate(135deg); transform: rotate(135deg);
+}
+
+.otherMessage,.myMessage,.systemMessage{
+    padding: 15px;
+    letter-spacing:1px;
+}
+.myMessage .message {
+    position: relative;
+    padding: 10px;
+    background: #409eff;
+    color:#fff;
+    border-radius: 5px;
+    margin-right:20px;
+    display: inline-block;
+}
+.myMessage .message::after {
+    position:absolute; 
+    top: 16px; 
+    right: -4px; 
+    padding: 5px;
+    border:inherit;  
+    border-left: none; 
+    border-top: none; 
+    content:""; 
+    background: inherit;
+    -webkit-transform: rotate(45deg); -moz-transform: rotate(45deg); transform: rotate(45deg);
+}
+
+.otherMessage{
+    padding: 15px;
+}
+
+.systemMessage .message{
+    background: #e5e5e5;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #606266;
+    letter-spacing:1.5px;
+}
+
+
+

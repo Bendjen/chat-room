@@ -2,24 +2,48 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-  <link rel="stylesheet" href="./lib/flex.css">
-  <link rel="stylesheet" href="./index.css">
-  <script src='./lib/socket.io.dev.js'></script>
-  <script src='./lib/vue.js'></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./lib/flex.css">
+    <link rel="stylesheet" href="./lib/element-ui.css">
+    <link rel="stylesheet" href="./index.css">
+    <script src='./lib/socket.io.dev.js'></script>
+    <script src='./lib/vue.js'></script>
+    <script src='./lib/element-ui.js'></script>
 </head>
 
-<body flex='dir:top main:center cross:center'>
-  <h1>CHAT ROOM</h1>
-  <div class='chatRoom' flex='dir:top main:center cross:center'>
-    <div class='messageBox'></div>
-    <div class='inputBox' flex='dir:top main:center cross:center'>
-
+<body>
+    <div id='app' flex='dir:top main:center cross:center'>
+        <h1>CHAT ROOM</h1>
+        <div class='chatRoom' flex='dir:top main:center cross:center'>
+            <div class='messageBox' flex='dir:top'>
+                <div v-for='(item,index) in messageList' :key='index'>
+                    <p class='systemMessage' flex='main:center cross:center' v-if='item.sender=="system"'>
+                        <span class='message'>{{item.text}}</span>
+                    </p>
+                    <p class='otherMessage' flex='main:left cross:center' v-if='item.sender!="system" && item.sender != username'>
+                        <span>{{item.sender}}：</span>
+                        <span class='message'>{{item.text}}</span>
+                    </p>
+                    <p class='myMessage' flex='main:right cross:center' v-if='item.sender!="system" && item.sender == username'>
+                        <span class='message'>{{item.text}}</span>
+                        <span>：{{item.sender}}</span>
+                    </p>
+                </div>
+            </div>
+            <div class='inputBox' flex='dir:top main:center cross:center'>
+                <textarea placeholder="请输入要发送的信息" v-model='willSendMessage' id='textarea' cols="30"
+                    rows="10"></textarea>
+                <div flex='main:right cross:center' style='width:100%'>
+                    <el-button class='sendButton'>发送 (Enter)</el-button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+
 </body>
 <script src="./index.js"></script>
+
 </html>

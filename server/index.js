@@ -7,7 +7,7 @@ const server = http.createServer(function (request, response) {
 })
 
 server.listen(3000, function () {
-  console.log("Server listening on port 3000")
+  console.log("Server listening on  http://localhost:3000")
 })
 
 CHAT.listen(server)
