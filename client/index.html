@@ -16,28 +16,41 @@
 
 <body>
     <div id='app' flex='dir:top main:center cross:center'>
-        <h1>CHAT ROOM</h1>
+        <h1 flex='main:center cross:center'>
+            CHAT ROOM
+            <div class='buttonContainer'>
+                <!-- <el-button class='changeChannelButton' style='margin-right:10px;' size='small'>切换频道</el-button> -->
+                <el-button class='changeNameButton' @click='changeName' size='small'>更名</el-button>
+            </div>
+        </h1>
+
         <div class='chatRoom' flex='dir:top main:center cross:center'>
-            <div class='messageBox' flex='dir:top'>
-                <div v-for='(item,index) in messageList' :key='index'>
-                    <p class='systemMessage' flex='main:center cross:center' v-if='item.sender=="system"'>
-                        <span class='message'>{{item.text}}</span>
-                    </p>
-                    <p class='otherMessage' flex='main:left cross:center' v-if='item.sender!="system" && item.sender != username'>
-                        <span>{{item.sender}}：</span>
-                        <span class='message'>{{item.text}}</span>
-                    </p>
-                    <p class='myMessage' flex='main:right cross:center' v-if='item.sender!="system" && item.sender == username'>
-                        <span class='message'>{{item.text}}</span>
-                        <span>：{{item.sender}}</span>
-                    </p>
+            <div class='messageBox' flex='dir:top main:center corss:center'>
+                <div flex='dir:top' class='wrapper'>
+                    <div v-for='(item,index) in messageList' :key='index' class='messageLine'>
+                        <p class='systemMessage' flex='main:center cross:center' v-if='item.sender=="system"'>
+                            <span class='message'>{{item.text}}</span>
+                        </p>
+                        <p class='otherMessage' flex='main:left cross:center'
+                            v-if='item.sender!="system" && item.sender != username'>
+                            <span>{{item.sender}}：</span>
+                            <span class='message'>{{item.text}}</span>
+                        </p>
+                        <p class='myMessage' flex='main:right cross:center'
+                            v-if='item.sender!="system" && item.sender == username'>
+                            <span class='message'>{{item.text}}</span>
+                            <span>：{{item.sender}}</span>
+                        </p>
+                    </div>
                 </div>
             </div>
+
+
             <div class='inputBox' flex='dir:top main:center cross:center'>
                 <textarea placeholder="请输入要发送的信息" v-model='willSendMessage' id='textarea' cols="30"
                     rows="10"></textarea>
                 <div flex='main:right cross:center' style='width:100%'>
-                    <el-button class='sendButton'>发送 (Enter)</el-button>
+                    <el-button class='sendButton' @click='sendMessage'>发送 (Enter)</el-button>
                 </div>
             </div>
         </div>

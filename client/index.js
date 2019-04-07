@@ -8,46 +8,80 @@ new Vue({
         return {
             username: '',
             willSendMessage: '',
-            messageList: []
+            messageList: [],
+            socket: null,
         }
     },
     mounted() {
-        const socket = io('http://localhost:3000');
+        this.socket = io('http://localhost:3000');
 
-        socket.on('connect', () => {
+        this.socket.on('connect', () => {
             document.getElementById('textarea').addEventListener('keydown', (event) => {
                 if (event.keyCode == 13) {
                     event.preventDefault()
-                    if (this.willSendMessage !== '') {
-                        socket.emit('message', {
-                            room: 'Lobby',
-                            text: this.willSendMessage
-                        }, () => {
-                            this.messageList.push({
-                                sender: this.username,
-                                text: this.willSendMessage
-                            })
-                            this.willSendMessage = ''
-                        })
-                    }
-
+                    this.sendMessage()
                 }
             })
-            socket.on('init', (res) => {
-                this.username = res.name
+            this.socket.on('nameResult', (res) => {
+                if (res.success) {
+                    this.username = res.name
+                } else {
+                    this.$alert(res.message, '提示')
+                }
             })
 
-            socket.on('join', (res) => {
+            this.socket.on('join', (res) => {
                 this.messageList.push(res)
             })
 
-            socket.on('message', (res) => {
+            this.socket.on('message', (res) => {
                 this.messageList.push(res)
+                this.$nextTick(() => {
+                    this.scrollIntoView()
+                })
             })
         })
-
-
-
+    },
+    methods: {
+        scrollIntoView() {
+            const domList = document.getElementsByClassName('messageLine')
+            domList[domList.length - 1].scrollIntoView()
+        },
+        sendMessage() {
+            if (this.willSendMessage !== '') {
+                this.socket.emit('message', {
+                    room: 'DEFAULT',
+                    text: this.willSendMessage
+                }, () => {
+                    this.messageList.push({
+                        sender: this.username,
+                        text: this.willSendMessage
+                    })
+                    this.willSendMessage = ''
+                    this.$nextTick(() => {
+                        this.scrollIntoView()
+                    })
+                })
+            }
+        },
+        changeName() {
+            const previousName = this.username
+            this.$prompt('请输入新的名称', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+            }).then(({ value }) => {
+                this.socket.emit('nameAttempt', { name: value }, () => {
+                    this.messageList.push({ sender: 'system', text: '您已更名为 ' + value })
+                    this.messageList = this.messageList.map(item => {
+                        if (item.sender == previousName) {
+                            return { ...item, sender: value }
+                        } else {
+                            return item
+                        }
+                    })
+                })
+            })
+        }
     },
 })
 

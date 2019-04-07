@@ -30,8 +30,9 @@ exports.listen = function (server) {
     io = socketio(server)
     io.on('connection', socket => {
         assignGuestName(socket)
-        joinRoom(socket, 'Lobby')
+        joinRoom(socket, 'DEFAULT')
         handleMessageBroadcasting(socket)
+        handleNameChangeAttempts(socket)
     })
 }
 
@@ -42,7 +43,8 @@ exports.listen = function (server) {
 function assignGuestName(socket) {
     let name = 'Guest' + guestNumber;
     nickNames[socket.id] = name;
-    socket.emit('init', {
+    socket.emit('nameResult', {
+        success: true,
         name: name
     })
     nameUsed.push(name);
@@ -95,6 +97,41 @@ function handleMessageBroadcasting(socket) {
             sender: nickNames[socket.id],
             text: req.text
         })
-        console.log(req.text)
+    })
+}
+
+// 变更名字
+
+function handleNameChangeAttempts(socket) {
+    socket.on('nameAttempt', (req, fn) => {
+        const name = req.name
+        if (name.indexOf('Guest') == 0) {
+            socket.emit('nameResult', {
+                success: false,
+                message: '姓名不允许使用“Guest”开头'
+            })
+        } else {
+            if (nameUsed.indexOf(name) == -1) {
+                let previousName = nickNames[socket.id];
+                let previousNameIndex = nameUsed.indexOf(previousName);
+                nameUsed.push(name);
+                nickNames[socket.id] = name;
+                delete nameUsed[previousNameIndex];
+                socket.emit('nameResult', {
+                    success: true,
+                    name: name
+                });
+                socket.broadcast.to(currentRoom[socket.id]).emit('message', {
+                    sender: 'system',
+                    text: `${previousName}  更名为 ${name}`
+                })
+                fn()
+            } else {
+                socket.emit('nameResult', {
+                    success: false,
+                    message: '该名称已被使用'
+                })
+            }
+        }
     })
 }

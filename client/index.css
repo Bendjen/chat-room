@@ -14,7 +14,9 @@ html,body,#app{
 }
 
 h1{
+  width: 60%;
   padding: 20px;
+  position: relative;
 }
 
 .chatRoom{
@@ -29,12 +31,20 @@ h1{
 .messageBox{
   height: 70%;
   width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden; 
+  overflow: hidden;
   background: #fff;
   box-sizing: border-box;
   padding: 20px;
+
 }
+
+.messageBox .wrapper{
+    height:95%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden; 
+}
+
 .inputBox{
   height: 30%;
   width: 100%;
@@ -121,5 +131,8 @@ h1{
     letter-spacing:1.5px;
 }
 
-
-
+.buttonContainer{
+    position: absolute;
+    right: 22px;
+    top: 12px;
+}
